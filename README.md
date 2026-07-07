@@ -1,29 +1,25 @@
-# Cars Dealership Full Stack Capstone Project
+# fullstack_developer_capstone
 
-This project is a full-stack web application for Best Cars, a national car dealership retailer in the United States.
+## Repository name
+xrwvm-fullstack_developer_capstone
 
-The application allows users to view dealership locations, filter dealers by state, review dealership details, register and log in, submit dealership reviews, and view customer reviews with sentiment analysis.
+## Project name
+fullstack_developer_capstone
 
-## Technologies Used
+## Application
+Best Cars Dealerships
 
-- React
-- Django
-- Flask
-- Node.js
-- Express
-- MongoDB
-- SQLite
-- Docker
-- Kubernetes
-- IBM Cloud Code Engine
-- GitHub Actions CI/CD
+## Description
+This project is the IBM Full Stack Developer Capstone application for a car dealership website. It includes a Django backend, React frontend, dealer APIs, car model APIs, user authentication, dealer reviews, sentiment analysis, admin pages, GitHub Actions CI/CD, and deployment screenshots.
 
-## Project Features
-
-- Responsive frontend pages for Home, About Us, Contact Us, Login, Register, Dealers, Dealer Details, and Post Review
-- Django backend for user authentication and application routing
-- Express and MongoDB microservice for dealership and review data
-- Flask sentiment analyzer microservice
-- Admin interface for car makes and car models
-- CI/CD workflow using GitHub Actions
-- Cloud deployment using IBM Cloud Code Engine
+## Main Features
+- View all dealerships
+- Filter dealerships by state
+- View dealer details
+- View dealer reviews
+- Register users
+- Login and logout users
+- Add reviews
+- Analyze review sentiment
+- Django admin support for car makes and car models
+- GitHub Actions CI/CD workflow

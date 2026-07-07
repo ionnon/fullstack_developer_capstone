@@ -6,3 +6,10 @@ __pycache__/
 node_modules/
 build/
 .DS_Store
+
+# Capstone local runtime files
+cookies.txt
+django_server
+sentiment_server
+sentiment_local_server.py
+database/data/added_reviews_local.json
