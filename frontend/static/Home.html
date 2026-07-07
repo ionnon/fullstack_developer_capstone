@@ -71,6 +71,16 @@
       window.location.href = "/dealers/";
     }
 
+    function showLanding() {
+      renderNav();
+      app.innerHTML =
+        '<div class="card" style="text-align:center; padding:60px 22px;">' +
+          '<h2>Welcome to our Dealerships!</h2>' +
+          '<p>Find the best car dealerships and reviews.</p>' +
+          '<a class="btn" href="/dealers/">View Dealerships</a>' +
+        '</div>';
+    }
+
     async function showDealers() {
       renderNav();
 
@@ -273,6 +283,11 @@
 
       if (path.startsWith("/register")) {
         showRegister();
+        return;
+      }
+
+      if (path === "/" || path === "") {
+        showLanding();
         return;
       }
 
