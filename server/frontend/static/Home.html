@@ -312,5 +312,18 @@
 
     router();
   </script>
+
+<script>
+// CAPSTONE_FORCE_STATE_FROM_URL
+document.addEventListener("DOMContentLoaded", function () {
+  setTimeout(function () {
+    const parts = window.location.pathname.split('/').filter(Boolean);
+    if (parts[0] === 'dealers' && parts[1] && typeof loadDealers === 'function') {
+      loadDealers(decodeURIComponent(parts[1]));
+    }
+  }, 300);
+});
+</script>
+
 </body>
 </html>

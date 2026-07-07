@@ -15,6 +15,7 @@ urlpatterns = [
     path('contact/', TemplateView.as_view(template_name="Contact.html"), name='contact'),
 
     path('dealers/', TemplateView.as_view(template_name="Home.html"), name='dealers'),
+    path("dealers/<str:state>/", TemplateView.as_view(template_name="Home.html"), name="dealers_by_state_page"),
     path('dealer/<int:id>/', TemplateView.as_view(template_name="Home.html"), name='dealer_detail'),
     path('postreview/<int:id>/', TemplateView.as_view(template_name="Home.html"), name='post_review'),
     path('login/', TemplateView.as_view(template_name="Home.html"), name='login'),
