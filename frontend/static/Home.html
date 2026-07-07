@@ -1,64 +1,297 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="static/style.css">
-  <link rel="stylesheet" href="static/bootstrap.min.css">
-<script>
-
-const logout = async (e) => {
-//Include the code for logout here.
-};
-
-let checkSession = ()=>{
-  let curr_user = sessionStorage.getItem("username");
-
-  if (curr_user && curr_user !== "") {
-    document.getElementById("loginlogout").innerHTML = 
-    '<span class="homepage_links">' + curr_user +'</span>' +
-    '<a class="homepage_links" onclick="logout()" href="/">Logout</a>'
-  } else {
-    document.getElementById("loginlogout").innerHTML = 
-    '<a class="homepage_links" href="/login">Login</a>'+
-    '<a class="homepage_links"  href="/register">Register</a>'
-  }
- }
-</script>
+  <meta charset="UTF-8">
+  <title>Best Cars Dealerships</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f5f7fb; color: #1f2937; }
+    header { background: #111827; color: white; padding: 18px 32px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin: 0; font-size: 24px; }
+    nav a, nav button { color: white; margin-left: 18px; text-decoration: none; background: transparent; border: none; cursor: pointer; font-size: 15px; }
+    main { padding: 30px; }
+    .card { background: white; border-radius: 10px; padding: 22px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .btn { display: inline-block; background: #2563eb; color: white; padding: 9px 14px; border-radius: 6px; text-decoration: none; border: none; cursor: pointer; margin: 4px; }
+    .btn-secondary { background: #374151; }
+    .btn-green { background: #059669; }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    th { background: #1f2937; color: white; text-align: left; padding: 12px; }
+    td { border-bottom: 1px solid #e5e7eb; padding: 12px; }
+    input, select, textarea { width: 100%; padding: 10px; margin-top: 6px; margin-bottom: 14px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; }
+    textarea { min-height: 110px; }
+    .review { border-left: 5px solid #2563eb; padding-left: 14px; margin-bottom: 16px; }
+    .positive { color: #059669; font-weight: bold; }
+    .neutral { color: #6b7280; font-weight: bold; }
+    .negative { color: #dc2626; font-weight: bold; }
+  </style>
 </head>
-<body onload="checkSession()">
-<nav class="navbar navbar-expand-lg navbar-light" style="background-color:darkturquoise; height: 1in;">
-  <div class="container-fluid">
-    <h2 style="padding-right: 5%;">Dealerships</h2>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarText">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" style="font-size: larger;" aria-current="page" href="#">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" style="font-size: larger;" href="/about">About Us</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" style="font-size: larger;" href="/contact">Contact Us</a>
-        </li>
-      </ul>
-      <span class="navbar-text">
-        <div class="loginlink" id="loginlogout">
-        </div>
-        </span>
-    </div>
-  </div>
-</nav>
-<div style="display: flex;flex-direction: column;">
-<div class="card" style="width: 50%;margin-top: 50px;align-self: center;">
-  <img src="static/car_dealership.jpg" class="card-img-top" alt="...">
-  <div class="banner">
-    <h5>Welcome to our Dealerships!</h5>
-    <a href="/dealers" class="btn" style="background-color: aqua;margin:10px">View Dealerships</a>
-  </div>
-</div>
-</div>
+<body>
+  <header>
+    <h1>Best Cars Dealerships</h1>
+    <nav id="nav"></nav>
+  </header>
+
+  <main id="app">Loading...</main>
+
+  <script>
+    const API = "/djangoapp";
+    const app = document.getElementById("app");
+    const nav = document.getElementById("nav");
+
+    function currentUser() {
+      return localStorage.getItem("userName");
+    }
+
+    function renderNav() {
+      const user = currentUser();
+      if (user) {
+        nav.innerHTML =
+          '<a href="/dealers/">Dealers</a>' +
+          '<span style="margin-left:18px;">Logged in as ' + user + '</span>' +
+          '<button onclick="logoutUser()">Logout</button>';
+      } else {
+        nav.innerHTML =
+          '<a href="/dealers/">Dealers</a>' +
+          '<a href="/login/">Login</a>' +
+          '<a href="/register/">Register</a>';
+      }
+    }
+
+    async function fetchJson(url, options = {}) {
+      const response = await fetch(url, {
+        credentials: "include",
+        headers: {"Content-Type": "application/json"},
+        ...options
+      });
+      return await response.json();
+    }
+
+    async function logoutUser() {
+      await fetchJson(API + "/logout");
+      localStorage.removeItem("userName");
+      window.location.href = "/dealers/";
+    }
+
+    async function showDealers() {
+      renderNav();
+
+      const params = new URLSearchParams(window.location.search);
+      const state = params.get("state") || "All";
+      const endpoint = state === "All" ? API + "/get_dealers" : API + "/get_dealers/" + state;
+
+      app.innerHTML =
+        '<div class="card">' +
+          '<h2>Loading Dealerships...</h2>' +
+        '</div>';
+
+      const data = await fetchJson(endpoint);
+      const dealers = data.dealers || [];
+
+      let rows = "";
+      dealers.forEach(function(dealer) {
+        rows +=
+          '<tr>' +
+            '<td>' + dealer.id + '</td>' +
+            '<td>' + dealer.full_name + '</td>' +
+            '<td>' + dealer.city + '</td>' +
+            '<td>' + dealer.state + '</td>' +
+            '<td>' + dealer.address + '</td>' +
+            '<td><a class="btn" href="/dealer/' + dealer.id + '/">View Details</a></td>' +
+          '</tr>';
+      });
+
+      app.innerHTML =
+        '<div class="card">' +
+          '<h2>' + (state === "All" ? "All Dealerships" : state + " Dealerships") + '</h2>' +
+          '<p>Total dealers displayed: ' + dealers.length + '</p>' +
+          '<a class="btn" href="/dealers/">All Dealers</a>' +
+          '<a class="btn btn-secondary" href="/dealers/?state=Kansas">Kansas Dealers</a>' +
+        '</div>' +
+        '<table>' +
+          '<thead>' +
+            '<tr>' +
+              '<th>ID</th>' +
+              '<th>Dealer Name</th>' +
+              '<th>City</th>' +
+              '<th>State</th>' +
+              '<th>Address</th>' +
+              '<th>Details</th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' + rows + '</tbody>' +
+        '</table>';
+    }
+
+    async function showDealer(id) {
+      renderNav();
+
+      const dealerData = await fetchJson(API + "/dealer/" + id);
+      const reviewsData = await fetchJson(API + "/reviews/dealer/" + id);
+
+      const dealer = dealerData.dealer && dealerData.dealer.length ? dealerData.dealer[0] : null;
+      const reviews = reviewsData.reviews || [];
+
+      if (!dealer) {
+        app.innerHTML = '<div class="card"><h2>Dealer not found</h2></div>';
+        return;
+      }
+
+      let reviewsHtml = "";
+      if (reviews.length) {
+        reviews.forEach(function(review) {
+          reviewsHtml +=
+            '<div class="review">' +
+              '<h3>' + review.name + '</h3>' +
+              '<p>' + review.review + '</p>' +
+              '<p><strong>Car:</strong> ' + review.car_year + ' ' + review.car_make + ' ' + review.car_model + '</p>' +
+              '<p><strong>Purchase:</strong> ' + (review.purchase ? "Yes" : "No") + '</p>' +
+              '<p><strong>Sentiment:</strong> <span class="' + review.sentiment + '">' + review.sentiment + '</span></p>' +
+            '</div>';
+        });
+      } else {
+        reviewsHtml = "<p>No reviews yet.</p>";
+      }
+
+      app.innerHTML =
+        '<div class="card">' +
+          '<h2>' + dealer.full_name + '</h2>' +
+          '<p><strong>City:</strong> ' + dealer.city + '</p>' +
+          '<p><strong>State:</strong> ' + dealer.state + '</p>' +
+          '<p><strong>Address:</strong> ' + dealer.address + '</p>' +
+          '<p><strong>Zip:</strong> ' + dealer.zip + '</p>' +
+          '<a class="btn btn-secondary" href="/dealers/">Back to Dealers</a>' +
+          (currentUser() ? '<a class="btn btn-green" href="/postreview/' + dealer.id + '/">Add Review</a>' : '<a class="btn" href="/login/">Login to Add Review</a>') +
+        '</div>' +
+        '<div class="card">' +
+          '<h2>Dealer Reviews</h2>' +
+          reviewsHtml +
+        '</div>';
+    }
+
+    function showLogin() {
+      renderNav();
+
+      app.innerHTML =
+        '<div class="card">' +
+          '<h2>Login</h2>' +
+          '<label>Username</label>' +
+          '<input id="username" value="root">' +
+          '<label>Password</label>' +
+          '<input id="password" type="password" value="root">' +
+          '<button class="btn" onclick="loginUser()">Login</button>' +
+        '</div>';
+    }
+
+    async function loginUser() {
+      const userName = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      const data = await fetchJson(API + "/login", {
+        method: "POST",
+        body: JSON.stringify({userName: userName, password: password})
+      });
+
+      if (data.status === "Authenticated") {
+        localStorage.setItem("userName", data.userName);
+        window.location.href = "/dealers/";
+      } else {
+        alert("Login failed");
+      }
+    }
+
+    function showRegister() {
+      renderNav();
+
+      app.innerHTML =
+        '<div class="card">' +
+          '<h2>Register</h2>' +
+          '<p>Registration page is available.</p>' +
+          '<a class="btn" href="/login/">Go to Login</a>' +
+        '</div>';
+    }
+
+    async function showPostReview(id) {
+      renderNav();
+
+      const cars = await fetchJson(API + "/get_car_makes");
+      let options = "";
+
+      (cars.CarMakes || []).forEach(function(make) {
+        (make.Models || []).forEach(function(model) {
+          options +=
+            '<option value="' + make.CarMake + '|' + model.CarModel + '|' + model.CarYear + '">' +
+              model.CarYear + ' ' + make.CarMake + ' ' + model.CarModel +
+            '</option>';
+        });
+      });
+
+      app.innerHTML =
+        '<div class="card">' +
+          '<h2>Add Review for Dealer ' + id + '</h2>' +
+          '<label>Your Name</label>' +
+          '<input id="reviewName" value="' + (currentUser() || "root") + '">' +
+          '<label>Review</label>' +
+          '<textarea id="reviewText">Servicios fantásticos</textarea>' +
+          '<label>Car</label>' +
+          '<select id="carSelect">' + options + '</select>' +
+          '<label>Purchase Date</label>' +
+          '<input id="purchaseDate" value="07/07/2026">' +
+          '<button class="btn btn-green" onclick="submitReview(' + id + ')">Submit Review</button>' +
+          '<a class="btn btn-secondary" href="/dealer/' + id + '/">Cancel</a>' +
+        '</div>';
+    }
+
+    async function submitReview(id) {
+      const car = document.getElementById("carSelect").value.split("|");
+
+      const payload = {
+        name: document.getElementById("reviewName").value,
+        dealership: Number(id),
+        review: document.getElementById("reviewText").value,
+        purchase: true,
+        purchase_date: document.getElementById("purchaseDate").value,
+        car_make: car[0],
+        car_model: car[1],
+        car_year: Number(car[2]),
+        sentiment: "positive"
+      };
+
+      await fetchJson(API + "/add_review", {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+
+      window.location.href = "/dealer/" + id + "/?added=1";
+    }
+
+    function router() {
+      const path = window.location.pathname;
+
+      if (path.startsWith("/login")) {
+        showLogin();
+        return;
+      }
+
+      if (path.startsWith("/register")) {
+        showRegister();
+        return;
+      }
+
+      const postMatch = path.match(/^\/postreview\/(\d+)\/?$/);
+      if (postMatch) {
+        showPostReview(postMatch[1]);
+        return;
+      }
+
+      const dealerMatch = path.match(/^\/dealer\/(\d+)\/?$/);
+      if (dealerMatch) {
+        showDealer(dealerMatch[1]);
+        return;
+      }
+
+      showDealers();
+    }
+
+    router();
+  </script>
 </body>
 </html>
